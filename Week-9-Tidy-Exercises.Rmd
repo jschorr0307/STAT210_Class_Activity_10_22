@@ -3,8 +3,8 @@ title: "Tidy Data"
 ---
 
 ```{r setup}
+#install.packages("tidyr")
 library(tidyverse)
-library(babynames)
 
 # Toy data
 cases <- tribble(
@@ -45,7 +45,8 @@ table5
 
 On a sheet of paper, draw how the cases data set would look if it had the same values grouped into three columns: **country**, **year**, **n**
 
-
+**Key:** former column names
+**Value:** former cells
 
 
 Try the following codes - what do they do? (annotate them with a comment)
@@ -57,6 +58,7 @@ cases %>% gather(key="year",value="n", starts_with("201"))
 cases %>% gather(key="year",value="n", -Country)
 ```
 
+* All four codes do the same thing in 4 different ways
 
 
 
@@ -64,16 +66,22 @@ tidyr is transitioning `gather()` to `pivot_longer()`.  Here are equivalent code
 ```{r}
 cases %>% gather(key="year",value="n", 2:4)
 cases %>% pivot_longer(2:4, names_to = "year", values_to = "n")
+# for rows 2 thru 4, change names to year and change values to n
 ```
 
+* Pivot_longer will take wide data and make it long
 
 ## Your Turn 2
 Rewrite the following codes as `pivot_longer()` statements
 ```{r}
-cases %>% gather(key="year",value="n", 2:4)
-cases %>% gather(key="year",value="n", "2011", "2012", "2013")
-cases %>% gather(key="year",value="n", starts_with("201"))
-cases %>% gather(key="year",value="n", -Country)
+#cases %>% gather(key="year",value="n", 2:4)
+cases %>% pivot_longer(2:4, names_to = "year", values_to = "n")
+#cases %>% gather(key="year",value="n", "2011", "2012", "2013")
+cases %>% pivot_longer(names_to= "year", values_to= "n",c("2011","2012","2013"))
+#cases %>% gather(key="year",value="n", starts_with("201"))
+cases %>% pivot_longer(names_to="year",values_to="n", starts_with("201"))
+#cases %>% gather(key="year",value="n", -Country)
+cases %>% pivot_longer(names_to="year",values_to="n", -Country)
 ```
 
 
@@ -85,7 +93,10 @@ cases %>% gather(key="year",value="n", -Country)
 Use `gather()` or `pivot_longer()` to reorganize `table4a` into three columns: **country**, **year**, and **cases**.
 
 ```{r}
-
+#converting year from chr to int with gather
+cases %>% gather(key="year",value="n", 2:3, convert = TRUE)
+#converting year with pivot_long
+cases %>% pivot_longer(2:4, names_to = "year", values_to = "n", names_ptypes = list(year = integer()))
 
 ```
 
@@ -113,7 +124,7 @@ Then select just the `county`, `year`, `codes` and `n` variables.
 
 ```{r}
 who %>%
-  gather(key = ______, value = _____, 5:60) %>%
+  gather(key = "codes", value = "n", 5:60) %>%
   select(-iso2, -iso3)
 ```
 
@@ -121,7 +132,7 @@ who %>%
 Bonus: Try to do the same code with `pivot_longer()`
 ```{r}
 who %>%
-  pivot_longer(names_to = _____, values_to =____, cols=5:60) %>%
+  pivot_longer(names_to = "codes", values_to ="n", cols=5:60) %>%
   select(-iso2, -iso3)
 
 ```
@@ -139,7 +150,7 @@ who %>%
   select(-iso2, -iso3) %>%
   separate(codes, c("new", "type", "sexage"), sep = "_") %>%
   select(-new) %>% 
-  _______________________________
+  separate(codes, into = c("new", "type", "sexage"), sep = 1)
 ```
 
 
